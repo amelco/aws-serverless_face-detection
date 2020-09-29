@@ -1,0 +1,28 @@
+service: face-detection
+
+frameworkVersion: '2'
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - s3:ListBucket
+        - s3:GetObject
+        - s3:DeleteObject
+        - s3:PutObject
+      Resource: arn:aws:s3:::face-detection-nuvens/*
+    - Effect: Allow
+      Action:
+        - rekognition:DetectFaces
+      Resource: "*"
+
+functions:
+  faceDetection:
+    handler: handler.faceDetection
+    events:
+      - s3:
+          bucket: face-detection-nuvens
+          event: s3:ObjectCreated:*
